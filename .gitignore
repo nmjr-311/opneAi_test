@@ -1,2 +1,5 @@
 logs/
 *.*~
+numajiri*
+*.csv
+*.pdf

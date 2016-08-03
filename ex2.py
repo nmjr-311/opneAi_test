@@ -9,8 +9,10 @@ def decide_action(theta, state):
     tmp = theta.T.dot(s)
     if(tmp < 0):
         return 0
-    else:
+    elif(tmp < 1):
         return 1
+    else:
+        return 2
     
 def set_weight(w, l):
     _sum = 0.0
@@ -24,18 +26,15 @@ def set_weight(w, l):
 
 #変数
 logFlag = False
-dimension = 4
-num_of_sample = 8
+dimension = 2
+num_of_sample = 4
 M = 5
 T = 200
 alpha = 0.1
 sigma = 0.5
 B = np.matrix(np.identity(dimension))
 max_time = 2000
-if logFlag:
-    max_trial = 1
-else:
-    max_trial = 100
+max_trial = 1
 success_count = 0
 eta_m = 1.0
 eta_b = (3.0*(3.0+np.log(dimension))) / (5.0 * dimension * np.sqrt(dimension))
@@ -44,8 +43,9 @@ log = ["gen,best_reward\n"]
 for trial in range(max_trial):
     #npr.seed(trial)
     #初期化
-    env = gym.make('CartPole-v0')
-    theta = ((2 * npr.rand(dimension)) - 10 * np.ones((dimension))).reshape(dimension,1)
+    #env = gym.make('CartPole-v0')
+    env = gym.make('MountainCar-v0')
+    theta = ((100 * npr.rand(dimension)) - 2 * np.ones((dimension))).reshape(dimension,1)
     #theta = (10 * npr.rand(dimension) + np.ones(dimension)).reshape(dimension, 1)
     #theta = np.array([(npr.rand(dimension) - 0.5) * 0.1]).reshape(dimension, 1)
     
@@ -65,7 +65,7 @@ for trial in range(max_trial):
             for m in range(M):
                 observation = env.reset()
                 for t in range(T):
-                    #env.render()
+                    env.render()
                     action = int(decide_action(c_j[1], observation))
                     observation, reward, done, info = env.step(action)
                     c_j[2] += reward
@@ -96,7 +96,7 @@ for trial in range(max_trial):
         sigma = sigma * np.exp(G_sigma * eta_b / 2.0)
         B = B.dot(expm((eta_b/2.0) * G_B))
         #if(g % 100 == 0):
-        #print(g)
+        print(g)
     if(g == max_time - 1):
         print("fail")
     else:
